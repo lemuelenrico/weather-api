@@ -3,6 +3,7 @@ name: run main.py
 on:
   schedule:
     - cron: '0 */2 * * *' # every 2 hrs
+  workflow_dispatch:   #
 
 jobs:
   build:
