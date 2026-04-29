@@ -2,9 +2,9 @@ name: run main.py
 
 on:
   schedule:
-    # Example: every Monday at 8:00 AM Philippine Time
+
     # GitHub cron uses UTC, so 00:00 UTC = 08:00 PH time
-    - cron: '0 0 * * 1'
+    - cron: '0 8 * * *'
 
   workflow_dispatch:   # allows manual run from GitHub Actions tab
 
