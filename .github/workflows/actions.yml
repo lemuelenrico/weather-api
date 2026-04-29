@@ -2,18 +2,18 @@ name: run main.py
 
 on:
   schedule:
-
+    # Example: every Monday at 8:00 AM Philippine Time
     # GitHub cron uses UTC, so 00:00 UTC = 08:00 PH time
-    - cron: '0 8 * * *'
+    - cron: '0 0 * * 1'
 
-  workflow_dispatch:   # allows manual run from GitHub Actions tab
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: write   # needed so GitHub Actions can commit/push status.log
+      contents: write
 
     steps:
       - name: checkout repo content
@@ -31,7 +31,7 @@ jobs:
 
       - name: execute py script
         env:
-          SOME_SECRET: ${{ secrets.SOME_SECRET }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: python main.py
 
       - name: commit files
