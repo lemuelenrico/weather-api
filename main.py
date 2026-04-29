@@ -20,18 +20,35 @@ try:
     SOME_SECRET = os.environ["SOME_SECRET"]
 except KeyError:
     SOME_SECRET = "Token not available!"
-    #logger.info("Token not available!")
-    #raise
 
 
 if __name__ == "__main__":
     logger.info(f"Token value: {SOME_SECRET}")
 
-    r = requests.get('https://weather.talkpython.fm/api/weather/?city=Berlin&country=DE')
-    if r.status_code == 200:
+    url = "https://api.open-meteo.com/v1/forecast?latitude=14.014&longitude=121.60&current_weather=true"
+
+    try:
+        r = requests.get(url, timeout=10)
+        r.raise_for_status()  # raises error for bad status
+
         data = r.json()
-        temperature = data["forecast"]["temp"]
-        logger.info(f'Weather in Berlin: {temperature}')
-    else:
-        logger.error(f"Request failed with status {r.status_code}")
-        logger.error(f"Response: {r.text}")
+
+        # 🔥 Updated parsing based on new API structure
+        current_weather = data["current_weather"]
+
+        temperature = current_weather["temperature"]
+        windspeed = current_weather["windspeed"]
+        winddirection = current_weather["winddirection"]
+        is_day = current_weather["is_day"]
+        weathercode = current_weather["weathercode"]
+        time = current_weather["time"]
+
+        logger.info(f"Time: {time}")
+        logger.info(f"Temperature: {temperature} °C")
+        logger.info(f"Wind Speed: {windspeed} km/h")
+        logger.info(f"Wind Direction: {winddirection}°")
+        logger.info(f"Is Day: {is_day}")
+        logger.info(f"Weather Code: {weathercode}")
+
+    except Exception as e:
+        logger.exception("Request or parsing failed")

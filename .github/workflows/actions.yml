@@ -2,41 +2,47 @@ name: run main.py
 
 on:
   schedule:
-    - cron: '0 8 * * 1' # every 8 am on Monday
-  workflow_dispatch:   #
+    # Example: every Monday at 8:00 AM Philippine Time
+    # GitHub cron uses UTC, so 00:00 UTC = 08:00 PH time
+    - cron: '0 0 * * 1'
+
+  workflow_dispatch:   # allows manual run from GitHub Actions tab
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    steps:
 
+    permissions:
+      contents: write   # needed so GitHub Actions can commit/push status.log
+
+    steps:
       - name: checkout repo content
-        uses: actions/checkout@v4 # checkout the repository content to github runner
+        uses: actions/checkout@v4
 
       - name: setup python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.9' # install the python version needed
-          
+          python-version: '3.9'
+
       - name: install python packages
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          
-      - name: execute py script # run main.py
+
+      - name: execute py script
         env:
           SOME_SECRET: ${{ secrets.SOME_SECRET }}
         run: python main.py
-          
+
       - name: commit files
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add -A
-          git diff-index --quiet HEAD || (git commit -a -m "updated logs" --allow-empty)
-          
+          git add status.log
+          git diff --cached --quiet || git commit -m "update weather status log"
+
       - name: push changes
         uses: ad-m/github-push-action@v0.6.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: main 
+          branch: main
