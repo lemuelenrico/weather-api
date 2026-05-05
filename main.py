@@ -4,6 +4,7 @@ import os
 
 import requests
 import psycopg
+import time
 
 
 logger = logging.getLogger(__name__)
@@ -71,27 +72,51 @@ VALUES (
 );
 """
 
-
 def get_current_weather():
-    response = requests.get(WEATHER_API_URL, timeout=10)
-    response.raise_for_status()
+    max_attempts = 3
+    wait_seconds = 10
 
-    data = response.json()
-    current_weather = data["current_weather"]
+    for attempt in range(1, max_attempts + 1):
+        try:
+            response = requests.get(WEATHER_API_URL, timeout=10)
+            response.raise_for_status()
 
-    weather_record = {
-        "api_latitude": data["latitude"],
-        "api_longitude": data["longitude"],
-        "timezone": data["timezone"],
-        "observation_time": current_weather["time"],
-        "temperature_c": current_weather["temperature"],
-        "windspeed_kmh": current_weather["windspeed"],
-        "winddirection_deg": current_weather["winddirection"],
-        "is_day": current_weather["is_day"],
-        "weathercode": current_weather["weathercode"],
-    }
+            data = response.json()
+            current_weather = data["current_weather"]
 
-    return weather_record
+            weather_record = {
+                "api_latitude": data["latitude"],
+                "api_longitude": data["longitude"],
+                "timezone": data["timezone"],
+                "observation_time": current_weather["time"],
+                "temperature_c": current_weather["temperature"],
+                "windspeed_kmh": current_weather["windspeed"],
+                "winddirection_deg": current_weather["winddirection"],
+                "is_day": current_weather["is_day"],
+                "weathercode": current_weather["weathercode"],
+            }
+
+            return weather_record
+
+        except requests.exceptions.HTTPError as e:
+            status_code = e.response.status_code if e.response is not None else None
+
+            logger.warning(
+                f"Attempt {attempt} failed with HTTP status {status_code}: {e}"
+            )
+
+            if attempt == max_attempts:
+                raise
+
+            time.sleep(wait_seconds)
+
+        except requests.exceptions.RequestException as e:
+            logger.warning(f"Attempt {attempt} failed due to request error: {e}")
+
+            if attempt == max_attempts:
+                raise
+
+            time.sleep(wait_seconds)
 
 
 def save_weather_to_database(weather_record):
