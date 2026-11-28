@@ -632,3 +632,6 @@
 2026-11-25 06:14:49,394 - __main__ - INFO - Weather pipeline started
 2026-11-25 06:14:49,466 - __main__ - INFO - Weather record extracted: {'api_latitude': 14.024605, 'api_longitude': 121.60369, 'timezone': 'GMT', 'observation_time': '2026-11-25T06:00', 'temperature_c': 25.5, 'windspeed_kmh': 14.5, 'winddirection_deg': 36, 'is_day': 1, 'weathercode': 55}
 2026-11-25 06:14:51,260 - __main__ - INFO - Weather record inserted into Neon successfully
+2026-11-28 05:39:37,993 - __main__ - INFO - Weather pipeline started
+2026-11-28 05:39:38,064 - __main__ - INFO - Weather record extracted: {'api_latitude': 14.024605, 'api_longitude': 121.60369, 'timezone': 'GMT', 'observation_time': '2026-11-28T05:30', 'temperature_c': 28.1, 'windspeed_kmh': 14.9, 'winddirection_deg': 36, 'is_day': 1, 'weathercode': 1}
+2026-11-28 05:39:41,302 - __main__ - INFO - Weather record inserted into Neon successfully
